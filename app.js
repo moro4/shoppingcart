@@ -75,6 +75,7 @@ class UI {
             Storage.saveCart(cart);
             this.setCartTotalsDOM(cart);
             this.addCartItem(cartItem);
+            this.showCart();
          });
       });
    }
@@ -106,6 +107,11 @@ class UI {
             </div>
          </div>
       `;
+   }
+
+   showCart(){
+      cartDOM.classList.add('showCart');
+      cartOverlay.classList.add('transparentBcg');
    }
 }
 
