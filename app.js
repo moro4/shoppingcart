@@ -74,6 +74,7 @@ class UI {
             cart.push(cartItem);
             Storage.saveCart(cart);
             this.setCartTotalsDOM(cart);
+            this.addCartItem(cartItem);
          });
       });
    }
@@ -87,6 +88,24 @@ class UI {
       });
       cartItems.innerText = itemsTotal;
       cartTotal.innerText = parseFloat(tempTotal.toFixed(2));
+   }
+
+   addCartItem(item){
+      cartContent.innerHTML = `
+         <div class="cart-item">
+            <img src=${item.image} alt="product">
+            <div>
+               <h4>${item.title}</h4>
+               <h5>$ ${item.price}</h5>
+               <span class='remove-item' data-id=${item.id}>remove</span>
+            </div>
+            <div>
+               <i class="fas fa-chevron-up" data-id=${item.id}></i>
+               <p class='item-amount'>${item.amount}</p>
+               <i class="fas fa-chevron-down" data-id=${item.id}></i>
+            </div>
+         </div>
+      `;
    }
 }
 
