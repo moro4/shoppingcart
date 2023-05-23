@@ -69,6 +69,9 @@ class UI {
          button.addEventListener('click', event => {
             button.textContent = 'Added';
             button.disabled = true;
+            let cartItem = {...Storage.getProduct(id), amount: 1};
+            cart.push(cartItem);
+            Storage.saveCart(cart);
          });
       });
    }
@@ -77,6 +80,13 @@ class UI {
 class Storage {
    static saveProducts(products){
       localStorage.setItem("products", JSON.stringify(products));
+   }
+   static getProduct(id){
+      let products = JSON.parse(localStorage.getItem('products'));
+      return products.find(product => product.id === id);
+   }
+   static saveCart(cart){
+      localStorage.setItem("cart", JSON.stringify(cart));
    }
 }
 
