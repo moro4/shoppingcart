@@ -5,7 +5,7 @@ const closeCartBtn = document.querySelector('.close-cart');
 const clearCartBtn = document.querySelector('.clear-cart');
 const cartDOM = document.querySelector('.cart');
 const cartOverlay = document.querySelector('.cart-overlay');
-const cartItems = document.querySelector('.cart-items');
+const cartBadgeCounter = document.querySelector('.cart-badge-counter');
 const cartTotal = document.querySelector('.cart-total');
 const cartContent = document.querySelector('.cart-content');
 const productsDOM = document.querySelector('.products-center');
@@ -73,26 +73,26 @@ class UI {
             let cartItem = {...Storage.getProduct(id), amount: 1};
             cart.push(cartItem);
             Storage.saveCart(cart);
-            this.setCartTotalsDOM(cart);
-            this.addCartItem(cartItem);
+            this.setCartBadgeAndCartTotalDOM(cart);
+            this.appendCartItemToCartDOM(cartItem);
             this.showCart();
          });
       });
    }
 
-   setCartTotalsDOM(cart) {
-      let tempTotal = 0;
-      let itemsTotal = 0;
+   setCartBadgeAndCartTotalDOM(cart) {
+      let totalPaymentSum = 0;
+      let totalNumberOfItemsInCart = 0;
       cart.forEach(item => {
-         tempTotal += item.price * item.amount;
-         itemsTotal += item.amount
+         totalPaymentSum += item.price * item.amount;
+         totalNumberOfItemsInCart += item.amount
       });
-      cartItems.innerText = itemsTotal;
-      cartTotal.innerText = parseFloat(tempTotal.toFixed(2));
+      cartBadgeCounter.innerText = totalNumberOfItemsInCart;
+      cartTotal.innerText = parseFloat(totalPaymentSum.toFixed(2));
    }
 
-   addCartItem(item){
-      cartContent.innerHTML = `
+   appendCartItemToCartDOM(item){
+      cartContent.innerHTML += `
          <div class="cart-item">
             <img src=${item.image} alt="product">
             <div>
@@ -113,6 +113,16 @@ class UI {
       cartDOM.classList.add('showCart');
       cartOverlay.classList.add('transparentBcg');
    }
+
+   populateCartDOM(cart){
+      cart.forEach(item => this.appendCartItemToCartDOM(item));
+   }
+
+   setupAPP(){
+      cart = Storage.getCart();
+      this.setCartBadgeAndCartTotalDOM(cart);
+      this.populateCartDOM(cart);
+   }
 }
 
 class Storage {
@@ -126,11 +136,18 @@ class Storage {
    static saveCart(cart){
       localStorage.setItem("cart", JSON.stringify(cart));
    }
+   static getCart(){
+      return localStorage.getItem('cart')
+      ? JSON.parse(localStorage.getItem('cart'))
+      : [];
+   }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
    const ui = new UI();
    const products = new Products();
+
+   ui.setupAPP();
 
    products.getProducts().then(products => {
       ui.dispayProducts(products)
