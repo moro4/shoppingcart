@@ -11,7 +11,7 @@ const cartContent = document.querySelector('.cart-content');
 const productsDOM = document.querySelector('.products-center');
 
 let cart = [];
-let buttonsDOM = [];
+let ATCButtonElements = [];
 
 // fetching the Products
 class Products {
@@ -45,7 +45,7 @@ class UI {
                   >
                   <button class="bag-btn" data-id=${product.id}>
                      <i class="fas fa-shopping-cart">
-                        <span class='btn-text'>Add to Bag</span>
+                        <span class='btn-text'>Add to Cart</span>
                      </i>
                   </button>
                </div>
@@ -60,6 +60,7 @@ class UI {
 
    getBagButtons(){
       const buttons = Array.from(document.querySelectorAll('.bag-btn'));
+      ATCButtonElements = buttons
       buttons.forEach(button => {
          let id = button.dataset.id;
          let inCart = cart.find(item => item.id === id);
@@ -114,15 +115,53 @@ class UI {
       cartOverlay.classList.add('transparentBcg');
    }
 
+   hideCart(){
+      cartDOM.classList.remove('showCart');
+      cartOverlay.classList.remove('transparentBcg');
+   }
+
    populateCartDOM(cart){
       cart.forEach(item => this.appendCartItemToCartDOM(item));
+   }
+
+   clearCart = () => {
+      let cartItems = cart.map(item => item.id)
+      cartItems.forEach(id => this.setEmptyCartState(id));
+      while(cartContent.firstChild) {
+         cartContent.firstChild.remove();
+      }
+      this.hideCart();
+   }
+
+   setEmptyCartState(id) {
+      cart = cart.filter(item => item.id !== id);
+      this.setCartBadgeAndCartTotalDOM(cart);
+      Storage.saveCart(cart);
+      let button = this.grabAddToCartButtonEl(id);
+      button.disabled = false;
+      button.innerHTML = `
+         <i class="fas fa-shopping-cart">
+            <span class='btn-text'>Add to Cart</span>
+         </i>
+      `;
+   }
+
+   grabAddToCartButtonEl(id) {
+      return ATCButtonElements.find(button => button.dataset.id === id);
    }
 
    setupAPP(){
       cart = Storage.getCart();
       this.setCartBadgeAndCartTotalDOM(cart);
       this.populateCartDOM(cart);
+      cartBtn.addEventListener('click', this.showCart);
+      closeCartBtn.addEventListener('click', this.hideCart);
    }
+
+   cartLogic(){
+      clearCartBtn.addEventListener('click', this.clearCart);
+   }
+
 }
 
 class Storage {
@@ -154,5 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
       Storage.saveProducts(products);
    }).then(() => {
       ui.getBagButtons();
+      ui.cartLogic();
    })
 });
