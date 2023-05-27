@@ -126,14 +126,14 @@ class UI {
 
    clearCart = () => {
       let cartItems = cart.map(item => item.id)
-      cartItems.forEach(id => this.setEmptyCartState(id));
+      cartItems.forEach(id => this.updateRelatedCartItemValues(id));
       while(cartContent.firstChild) {
          cartContent.firstChild.remove();
       }
       this.hideCart();
    }
 
-   setEmptyCartState(id) {
+   updateRelatedCartItemValues(id) {
       cart = cart.filter(item => item.id !== id);
       this.setCartBadgeAndCartTotalDOM(cart);
       Storage.saveCart(cart);
@@ -160,6 +160,12 @@ class UI {
 
    cartLogic(){
       clearCartBtn.addEventListener('click', this.clearCart);
+      cartContent.addEventListener('click', event => {
+         if(event.target.classList.contains('remove-item')) {
+            this.updateRelatedCartItemValues(event.target.dataset.id);
+            event.target.closest('.cart-item').remove();
+         }
+      });
    }
 
 }
