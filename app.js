@@ -164,6 +164,19 @@ class UI {
          if(event.target.classList.contains('remove-item')) {
             this.updateRelatedCartItemValues(event.target.dataset.id);
             event.target.closest('.cart-item').remove();
+         } else if(event.target.classList.contains('fa-chevron-up')) {
+            cart.find(item => item.id === event.target.dataset.id).amount++;
+            Storage.saveCart(cart);
+            this.setCartBadgeAndCartTotalDOM(cart);
+            event.target.nextElementSibling.innerText++;
+         } else if(event.target.classList.contains('fa-chevron-down')) {
+            let cartItem = cart.find(item => item.id === event.target.dataset.id)
+            if(cartItem.amount >= 2) {
+               cartItem.amount--;
+               Storage.saveCart(cart);
+               this.setCartBadgeAndCartTotalDOM(cart);
+               event.target.previousElementSibling.innerText--;
+            }
          }
       });
    }
